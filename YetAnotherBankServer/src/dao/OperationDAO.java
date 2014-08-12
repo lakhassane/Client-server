@@ -11,6 +11,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import test.Service;
@@ -45,5 +46,49 @@ public class OperationDAO {
         } catch (SQLException ex) {
             Logger.getLogger(AgenceDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public ArrayList<Operation> getAllOperation() {
+        ArrayList<Operation> listeOperation = new ArrayList<>();
+        try {
+            st = conn.prepareStatement( "Select * from operation" );
+            rs = st.executeQuery();
+            while ( rs.next() ) {
+                Operation operation = new Operation();
+                operation.setCodeop(rs.getInt("codeop"));
+                operation.setDateop(rs.getString("dateop"));
+                operation.setLibelleop(rs.getString("libelleop"));
+                operation.setNumcpt(rs.getInt("numcpt"));
+                operation.setSensop(rs.getString("sensop"));
+                
+                listeOperation.add(operation);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AgenceDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listeOperation;
+    }
+    
+    public ArrayList<Operation> getOperationByNum(String numCmpte ) {
+        ArrayList<Operation> listeOperation = new ArrayList<>();
+        try {
+            st = conn.prepareStatement( "Select * from operation where numcpt = ?" );
+            st.setString(1, numCmpte);
+            rs = st.executeQuery();
+            while ( rs.next() ) {
+                Operation operation = new Operation();
+                operation.setCodeop(rs.getInt("codeop"));
+                operation.setDateop(rs.getString("dateop"));
+                operation.setLibelleop(rs.getString("libelleop"));
+                operation.setNumcpt(rs.getInt("numcpt"));
+                operation.setSensop(rs.getString("sensop"));
+                
+                listeOperation.add(operation);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Service.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return listeOperation;
     }
 }

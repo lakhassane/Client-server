@@ -18,6 +18,8 @@ import test.ServiceLocator;
  */
 public class ConnexionGUI extends javax.swing.JFrame {
 
+    public static Customer theGuy;
+    
     /**
      * Creates new form ConnexionGUI
      */
@@ -123,7 +125,7 @@ public class ConnexionGUI extends javax.swing.JFrame {
 //                Client.oos.flush();
 
                 Customer customer = (Customer) ServiceLocator.getService("clientService",-1, loginField.getText());
-
+                
 //                Client.oos.writeObject(-1);
 //                Client.oos.flush();
 //                

@@ -6,6 +6,7 @@ package service;
 
 import beans.Operation;
 import dao.OperationDAO;
+import java.util.ArrayList;
 
 /**
  *
@@ -22,6 +23,20 @@ public class OperationServiceImpl implements IOperationService {
         operationDAO.ajouter(operation);
     }
 
+    @Override
+    public ArrayList<Operation> getOperationByNum(String numCompte) {
+        operationDAO = new OperationDAO();
+        operationDAO.connect();
+        return operationDAO.getOperationByNum(numCompte);
+    }
+
+    @Override
+    public ArrayList<Operation> getAllOperation() {
+        operationDAO = new OperationDAO();
+        operationDAO.connect();
+        return operationDAO.getAllOperation();
+    }
+    
     @Override
     public String getNom() {
         return "operationService";

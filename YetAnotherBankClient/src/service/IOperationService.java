@@ -5,6 +5,7 @@
 package service;
 
 import beans.Operation;
+import java.util.ArrayList;
 
 /**
  *
@@ -13,5 +14,9 @@ import beans.Operation;
 public interface IOperationService {
     
     public void ajouterOperation( Operation operation );
+    
+    public ArrayList<Operation> getOperationByNum(String numCompte );
+    public ArrayList<Operation> getAllOperation();
+    
     public String getNom();
 }

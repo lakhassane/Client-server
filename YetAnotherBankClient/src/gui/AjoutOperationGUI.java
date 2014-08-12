@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import test.Client;
 import beans.Compte;
+import beans.Customer;
 import beans.Operation;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -19,17 +20,19 @@ import test.ServiceLocator;
 
 /**
  *
- * @author pacheikh
+ * @author lakhassane
  */
 public class AjoutOperationGUI extends javax.swing.JFrame {
 
+    public Customer cust;
     /**
      * Creates new form AjoutOperationGUI
      */
     public AjoutOperationGUI() {
 
+        cust = ClientGUI.customer;
         ArrayList<Compte> listeCompte = (ArrayList<Compte>) ServiceLocator.getService("compteService",
-                ClientGUI.customer.getNumcli(), "");
+                cust.getNumcli(), "");
 
 //            Client.oos.writeObject("getCompte");
 //            Client.oos.flush();
@@ -146,10 +149,9 @@ public class AjoutOperationGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void retirerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_retirerButtonActionPerformed
-        try {
-            Compte compte = (Compte) ServiceLocator.getService("compteService",
-                ClientGUI.customer.getNumcli(), (String) listeCompteComboBox.getSelectedItem());
-            
+        Compte compte = (Compte) ServiceLocator.getService("compteService",
+                cust.getNumcli(), (String) listeCompteComboBox.getSelectedItem());
+
 //            Client.oos.writeObject("getCompte");
 //            Client.oos.flush();
 //
@@ -160,42 +162,54 @@ public class AjoutOperationGUI extends javax.swing.JFrame {
 //            Client.oos.flush();
 
 //            Compte compte = (Compte) Client.ois.readObject();
-            compte.setSoldecpt(Math.abs(compte.getSoldecpt() - Float.parseFloat(sommeField.getText())));
+        System.out.println("solde : " + compte.getSoldecpt());
+        if ( "DB".equals(compte.getSenscpt())){
+            compte.setSoldecpt(compte.getSoldecpt() + Float.parseFloat(sommeField.getText()));
+        }
+        else {
             if (compte.getSoldecpt() - Float.parseFloat(sommeField.getText()) < 0) {
+                System.out.println("retirer/debiteur");
+                compte.setSoldecpt(Math.abs(compte.getSoldecpt() - Float.parseFloat(sommeField.getText())));
                 compte.setSenscpt("DB");
             }
-
-            Client.oos.writeObject("updateCompte");
-            Client.oos.flush();
-
-            Client.oos.writeObject(compte);
-            Client.oos.flush();
-            
-            Date actuelle = new Date();
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-            
-            Operation operation = new Operation();
-            operation.setLibelleop("retirer de l'argent");
-            operation.setSensop("DB");
-            operation.setDateop(dateFormat.format(actuelle));
-            operation.setNumcpt(compte.getNumcpt());
-
-            Client.oos.writeObject(operation);
-            Client.oos.flush();
-
-            sommeField.setText("");
-
-        } catch (IOException ex) {
-            Logger.getLogger(AjoutOperationGUI.class.getName()).log(Level.SEVERE, null, ex);
+            else {
+                compte.setSoldecpt(compte.getSoldecpt() - Float.parseFloat(sommeField.getText()));
+            }
         }
+        System.out.println("nouveau solde : " + compte.getSoldecpt());
+
+//            Client.oos.writeObject("updateCompte");
+//            Client.oos.flush();
+
+//            Client.oos.writeObject(compte);
+//            Client.oos.flush();
+
+        Date actuelle = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+
+        Operation operation = new Operation();
+        operation.setLibelleop("retirer de l'argent");
+        operation.setSensop("DB");
+        operation.setDateop(dateFormat.format(actuelle));
+        operation.setNumcpt(compte.getNumcpt());
+
+        ServiceLocator.params[0] = compte;
+        ServiceLocator.params[1] = operation;
+
+        Object ob = ServiceLocator.getService("updateService", -1, "");
+
+//            Client.oos.writeObject(operation);
+//            Client.oos.flush();
+
+        sommeField.setText("");
+
     }//GEN-LAST:event_retirerButtonActionPerformed
 
     private void deposerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deposerButtonActionPerformed
-        try {
-            
-            Compte compte = (Compte) ServiceLocator.getService("compteService",
-            ClientGUI.customer.getNumcli(), (String) listeCompteComboBox.getSelectedItem());
-            
+
+        Compte compte = (Compte) ServiceLocator.getService("compteService",
+                cust.getNumcli(), (String) listeCompteComboBox.getSelectedItem());
+
 //            Client.oos.writeObject("getCompte");
 //            Client.oos.flush();
 //
@@ -206,35 +220,42 @@ public class AjoutOperationGUI extends javax.swing.JFrame {
 //            Client.oos.flush();
 
 //            Compte compte = (Compte) Client.ois.readObject();
-            if ("DB".equals(compte.getSenscpt())) {
-                if (-compte.getSoldecpt() + Float.parseFloat(sommeField.getText()) < 0) {
-                    compte.setSoldecpt(Math.abs(-compte.getSoldecpt() + Float.parseFloat(sommeField.getText())));
-                } else {
-                    compte.setSoldecpt(-compte.getSoldecpt() + Float.parseFloat(sommeField.getText()));
-                    compte.setSenscpt("CR");
-                }
+        if ("DB".equals(compte.getSenscpt())) {
+            System.out.println("ajouter/debiteur");
+            if (-compte.getSoldecpt() + Float.parseFloat(sommeField.getText()) < 0) {
+                compte.setSoldecpt(Math.abs(-compte.getSoldecpt() + Float.parseFloat(sommeField.getText())));
+            } else {
+                System.out.println("ajouter/crediteur");
+                compte.setSoldecpt(-compte.getSoldecpt() + Float.parseFloat(sommeField.getText()));
+                compte.setSenscpt("CR");
             }
-
-            Client.oos.writeObject("updateCompte");
-            Client.oos.flush();
-
-            Client.oos.writeObject(compte);
-            Client.oos.flush();
-
-            Operation operation = new Operation();
-            operation.setLibelleop("déposer de l'argent");
-            operation.setSensop("CR");
-            operation.setDateop(null);
-            operation.setNumcpt(compte.getNumcpt());
-
-            Client.oos.writeObject(operation);
-            Client.oos.flush();
-
-            sommeField.setText("");
-
-        } catch (IOException ex) {
-            Logger.getLogger(AjoutOperationGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+//            Client.oos.writeObject("updateCompte");
+//            Client.oos.flush();
+//
+//            Client.oos.writeObject(compte);
+//            Client.oos.flush();
+        
+        Date actuelle = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+
+        Operation operation = new Operation();
+        operation.setLibelleop("déposer de l'argent");
+        operation.setSensop("CR");
+        operation.setDateop(dateFormat.format(actuelle));
+        operation.setNumcpt(compte.getNumcpt());
+
+//            Client.oos.writeObject(operation);
+//            Client.oos.flush();
+        ServiceLocator.params[0] = compte;
+        ServiceLocator.params[1] = operation;
+
+        Object ob = ServiceLocator.getService("updateService", -1, "");
+
+
+        sommeField.setText("");
+
     }//GEN-LAST:event_deposerButtonActionPerformed
     /**
      * @param args the command line arguments

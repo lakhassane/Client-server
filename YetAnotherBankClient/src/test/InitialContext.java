@@ -7,6 +7,7 @@ package test;
 import beans.Agence;
 import beans.Compte;
 import beans.Customer;
+import beans.Operation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -14,7 +15,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author pacheikh
+ * @author lakhassane
  */
 class InitialContext {
 
@@ -105,6 +106,43 @@ class InitialContext {
             } catch (IOException ex) {
                 Logger.getLogger(InitialContext.class.getName()).log(Level.SEVERE, null, ex);
             }
+            
+        }
+        else if ( nom.equalsIgnoreCase("updateService")) {
+            try {
+                Client.oos.writeObject(nom);
+                Client.oos.flush();
+                
+                Client.oos.writeObject(ServiceLocator.params[0]);
+                Client.oos.flush();
+                
+                if ( ServiceLocator.params[0] instanceof Compte ){
+                    Client.oos.writeObject(ServiceLocator.params[1]);
+                    Client.oos.flush();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(InitialContext.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }
+        else if ( nom.equalsIgnoreCase("operationService")) {
+            try {
+                Client.oos.writeObject(nom);
+                Client.oos.flush();
+                
+                Client.oos.writeObject(numAgence);
+                Client.oos.flush();
+                
+                Client.oos.writeObject(nomClient);
+                Client.oos.flush();
+                
+                ArrayList<Operation> listeOperation = (ArrayList<Operation>) Client.ois.readObject();
+                
+                return listeOperation;
+                
+            } catch (IOException | ClassNotFoundException ex) {
+                Logger.getLogger(InitialContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
             
         }
         

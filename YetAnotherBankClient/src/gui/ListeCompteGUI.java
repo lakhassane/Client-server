@@ -150,18 +150,7 @@ public class ListeCompteGUI extends javax.swing.JFrame {
         ArrayList<Compte> listeCompte = (ArrayList<Compte>) ServiceLocator.getService("compteService",
                 clientComboBox.getSelectedIndex()+1, "");
 
-//            Client.oos.writeObject("getCompte");
-//            Client.oos.flush();
-//
-//            Client.oos.writeObject(clientComboBox.getSelectedIndex() + 1);
-//            Client.oos.flush();
-//
-//            Client.oos.writeObject("");
-//            Client.oos.flush();
-
-//            ArrayList<Compte> listeCompte = (ArrayList<Compte>) Client.ois.readObject();
-
-        System.out.println("nbre : " + listeCompte.size());
+//        System.out.println("nbre : " + listeCompte.size());
 
         String[][] infoCompte = new String[listeCompte.size() * 2][6];
         int i = 0;

@@ -301,8 +301,7 @@ public class Service extends Thread {
                         } else if (object instanceof Compte) {
                             Compte compte = (Compte) object;
                             COSI.ajouterCompte(compte);
-                            OSI.ajouterOperation((Operation) ois.readObject());
-                            
+                            OSI.ajouterOperation((Operation) ois.readObject());                     
                         }
                         break;
 //                    case "ajoutAgence":
@@ -315,14 +314,14 @@ public class Service extends Thread {
 ////                        writeDB(customer);
 //                        clientDAO.ajouter(customer);
 //                        break;
-                    case "ajoutCompte":
-                        Compte compte = (Compte) ois.readObject();
-                        Operation operation = (Operation) ois.readObject();
-//                        writeDB(compte);
-//                        writeDB(operation);
-                        compteDAO.ajouter(compte);
-                        operationDAO.ajouter(operation);
-                        break;
+//                    case "ajoutCompte":
+//                        Compte compte = (Compte) ois.readObject();
+//                        Operation operation = (Operation) ois.readObject();
+////                        writeDB(compte);
+////                        writeDB(operation);
+//                        compteDAO.ajouter(compte);
+//                        operationDAO.ajouter(operation);
+//                        break;
                     case "agenceService":
 //                        ArrayList<Object> liste = getAllInfoDB("agence");
 //                        ArrayList<Agence> liste = agenceDAO.getAllAgence();
@@ -330,14 +329,18 @@ public class Service extends Thread {
                         oos.writeObject(liste);
                         oos.flush();
                         break;
-                    case "updateCompte":
+                    case "updateService":
                         System.out.println("update en cours");
                         Compte compteUpdate = (Compte) ois.readObject();
                         Operation operationUpdate = (Operation) ois.readObject();
 //                        updateCompte(compteUpdate.getNumcpt(), compteUpdate);
 //                        writeDB(operationUpdate);
-                        compteDAO.updateCompte(compteUpdate.getNumcpt(), compteUpdate);
-                        operationDAO.ajouter(operationUpdate);
+//                        compteDAO.updateCompte(compteUpdate.getNumcpt(), compteUpdate);
+                        System.out.println("nm cmpte : " + compteUpdate.getNumcpt());
+                        System.out.println("updating : " + compteUpdate.getSoldecpt());
+                        COSI.updateCompte(compteUpdate.getNumcpt(), compteUpdate);
+//                        operationDAO.ajouter(operationUpdate);
+                        OSI.ajouterOperation(operationUpdate);
                         break;
                     case "clientService":
                         int numAgence = (int) ois.readObject();
@@ -364,25 +367,37 @@ public class Service extends Thread {
                         
                         if (numClient >= 0) {
                             if (!"".equals(numcompte)) {
-//                                Compte compte2 = getCompteByNumDB(numcompte);
-//                                Compte compte2 = compteDAO.getCompteByNum(numcompte);
                                 Compte compte2 = COSI.getCompteByNum(numcompte);
                                 oos.writeObject(compte2);
                                 oos.flush();
                             } else {
-//                                ArrayList<Compte> liste2 = getCompteByClientDB(numClient);
-//                                ArrayList<Compte> liste2 = compteDAO.getCompteByClientDB(numClient);
                                 ArrayList<Compte> liste2 = COSI.getCompteByClient(numClient);
                                 oos.writeObject(liste2);
                                 oos.flush();
                             }
                         } else {
-//                            ArrayList<Object> liste2 = getAllInfoDB("compte");
-//                            ArrayList<Compte> liste2 = compteDAO.getAllCompte();
                             ArrayList<Compte> liste2 = COSI.getAllCompte();
                             oos.writeObject(liste2);
                             oos.flush();
                         }
+                        break;
+                    case "operationService":
+                        int num = (int) ois.readObject();
+                        String numCompte = (String) ois.readObject();
+                        
+                        if ( num >= 0 ){
+                            if ( !"".equals(numCompte)) {
+                                ArrayList<Operation> listeOperation = OSI.getOperationByNum(numCompte);
+                                oos.writeObject(listeOperation);
+                                oos.flush();
+                            }
+                            else {
+                                ArrayList<Operation> listeOperation2 = OSI.getAllOperation();
+                                oos.writeObject(listeOperation2);
+                                oos.flush();
+                            }
+                        }
+                        
                         break;
                 }
             } while (true);

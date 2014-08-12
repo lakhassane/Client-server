@@ -6,7 +6,7 @@ package test;
 
 /**
  *
- * @author pacheikh
+ * @author lakhassane
  */
 public class ServiceLocator {
     
@@ -22,11 +22,11 @@ public class ServiceLocator {
         Object service = cache.getService(nom+""+numAgence+""+nomClient);
         
         if ( service != null ){
-            System.out.println("Getting it from the cache...");
+//            System.out.println("Getting it from the cache...");
             return service;
         }
         
-        System.out.println("Initializing system....");
+//        System.out.println("Initializing system....");
         InitialContext context = new InitialContext();
         Object service1 = context.lookup(nom, numAgence, nomClient);
         cache.addService(nom+""+numAgence+""+nomClient, service1);
